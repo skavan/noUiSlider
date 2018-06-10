@@ -401,6 +401,7 @@
 				rtl: 'rtl',
 				draggable: 'draggable',
 				drag: 'state-drag',
+				fixedDrag: 'state-fixedDrag',
 				tap: 'state-tap',
 				active: 'active',
 				tooltip: 'tooltip',

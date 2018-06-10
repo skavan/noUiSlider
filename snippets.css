@@ -1,0 +1,75 @@
+/* This line can be removed it was just for display on CodePen: */
+.container {
+    height: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: antiquewhite;
+  }
+  
+  .container .box {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .container .main-header {
+    background: #eee;
+    padding: 0.5em;
+  }
+  
+  .container .main-content {
+    background-color: blue;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .container .main-footer {
+    background: #eee;
+    padding: 0.5em;
+  }
+  
+  .container .report-body {
+    background-color: yellow;
+    flex: 1;
+    align-items: top;
+    padding: 1em 1em;
+    overflow: hidden;
+  }
+
+ /* FROM FLEX VERSION */
+
+
+  .hScroll {
+    position: absolute;
+    bottom: 0;
+    background-color: red;
+    height: 16px;
+    width: 100%; 
+    display: flex;
+    padding:0;
+    margin:0;
+}
+.hScrollCtl {
+  margin-left: 16px;
+  margin-right: 16px;
+  background-color: yellow;
+  height: auto;
+  width: 100%;
+}
+.vScroll {
+  position: absolute;
+  right: 4px;
+  bottom:0;
+  background-color: purple;
+  height: 100%;
+  width: 8px; 
+  display: flex;
+  padding:0;
+  margin:0;
+}
+.vScrollCtl {
+
+  background-color: yellow;
+  height: auto;
+  width: 100%;
+}

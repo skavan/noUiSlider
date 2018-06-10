@@ -39,6 +39,7 @@ module.exports = function(grunt) {
 		concat: {
 			options: {
 				banner: VERSION_TEMPLATE,
+				sourceMap :true,
 				process: function(src, filepath) {
 
 					if ( filepath === 'src/js/intro.js' ) {
@@ -112,7 +113,10 @@ module.exports = function(grunt) {
 		uglify: {
 			all: {
 				options: {
-					banner: VERSION_TEMPLATE
+					banner: VERSION_TEMPLATE,
+					sourceMap: true,
+					sourceMapIncludeSources : true,
+    				sourceMapIn : 'distribute/nouislider.js.map'
 				},
 				files: {
 					'distribute/nouislider.min.js': 'distribute/nouislider.js'
@@ -160,6 +164,8 @@ module.exports = function(grunt) {
 
 	// https://www.npmjs.com/package/grunt-eslint
 	grunt.loadNpmTasks('grunt-eslint');
+
+	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	grunt.registerTask('default', ['concat', 'less', 'jshint']);
 	grunt.registerTask('test', ['concat', 'less', 'jshint', 'qunit']);

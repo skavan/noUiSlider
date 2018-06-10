@@ -7,7 +7,9 @@
   "scripts": {
     "build": "grunt create",
     "watch:js": "npm run build && onchange 'src/js/*.js' 'src/*.css' -- npm run build",
+    "watch:myjs": "onchange \"src/js/*.js\" -- npm run build",
     "serve-tests": "browser-sync start --server . --startPath tests/slider.html --files 'distribute/, tests/*.js'",
+    "serve:myjs": "browser-sync start --server . --startPath distribute/index.html --files \"distribute/\"",
     "test": "grunt test",
     "dev": "./scripts/dev.sh"
   },
@@ -24,6 +26,7 @@
     "grunt-contrib-less": "^1.4.0",
     "grunt-contrib-qunit": "^1.2.0",
     "grunt-contrib-uglify": "^0.5.1",
+    "grunt-contrib-watch": "^1.1.0",
     "grunt-eslint": "^20.1.0",
     "onchange": "2.0.0",
     "simulant": "0.1.5"

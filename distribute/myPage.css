@@ -1,0 +1,88 @@
+.page {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    margin: 0;
+    background-color: whitesmoke;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding:0;
+    
+  }
+  .header, .footer{
+    flex: 0 0 auto;
+    background: #ccc;
+    margin: 6px;                   /* outside the element */
+    padding: 6px;                  /* inside the element */
+  }
+  
+  .content {
+    margin: 6px;                   /* outside the element */
+    margin-top: 3px;
+    margin-bottom: 3px;
+    padding: 0px;                  /* inside the element */
+    flex: 1;
+    background: lightblue;
+    display: flex;
+    flex-direction: column;
+    /* default setting; can be omitted */
+    overflow: hidden;
+    flex-wrap: wrap;
+  }
+  
+  .contentHeader, .contentFooter {
+    flex: 0 0 auto;
+    margin: 10px;                   /* outside the element */
+    /* background-color: lightgrey; */
+  }
+  .contentBody {
+    flex: 1;
+    height:100%;
+    position: relative;
+    background-color: orange;
+    overflow: hidden;
+  }
+  
+  .hScroll {
+      position: absolute;
+      bottom: 0;
+      background-color: red;
+      height: 16px;
+      width: 100%; 
+      display: flex;
+      padding:0;
+      margin:0;
+  }
+  .hScrollCtl {
+    margin-left: 16px;
+    margin-right: 16px;
+    background-color: yellow;
+    height: auto;
+    width: 100%;
+  }
+  .vScroll {
+    position: absolute;
+    right: 0;
+    top:0;
+    background-color: purple;
+    height: 100%;
+    width: 16px; 
+    display: flex;
+    padding:0;
+    margin:0;
+  }
+  .vScrollCtl {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    background-color: yellow;
+    height: auto;
+    width: 100%;
+  }
+
+  .rounded-6 {
+    border-radius: 6px;
+    border-color: gray;
+  }
+
+  .shadow {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+  }
