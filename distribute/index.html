@@ -7,26 +7,182 @@
 </head>
 
 <body class="page">
-    <div class="header rounded-6 shadow">I am a header that fits my content.<br>I have rounded corners (rounded-6) and a box shadow (shadow) </div>
-    <div class="content rounded-6 shadow">
-      <div class="contentHeader">I am the content header.<br> I am sized to my content.</div>
-      <div class="contentBody">
-        <a href=""><img src="http://via.placeholder.com/1400x800"></a>
-        <div class="vScroll">
-          <div class="vScrollCtl">V</div>
-          </div>
-        <div class="hScroll">
-          <div class="hScrollCtl">X</div>
-        </div>
-        
+  <div class="header">
+    <div class="rounded-1 ui-section">I am a header that fits my content.
+      <br>I have rounded corners (rounded-1) and a box shadow (shadow) </div>
+  </div>
+  <div class="content ui-section">
+    <div class="contentHeader ">
+      I am the content header.
+      <br> I am sized to my content.</div>
+    <div class="contentBody rounded-1">
+      <embed id="demo-tiger" type="image/svg+xml" style="border:1px solid black; " src="tiger.svg" />
+      <!--       <a href="">
+        <img src="http://via.placeholder.com/1400x800">
+      </a> -->
+      <!--       <div class="vScroll">
+        <div class="vScrollCtl">V</div>
       </div>
-      <div class="contentFooter">Content Footer</div>
-    
+      <div class="hScroll">
+        <div class="hScrollCtl">X</div>
+      </div> -->
+
     </div>
-    <div class="footer rounded-6">I am a footer that fits my <br>content</div>
+    <div class="contentFooter">Content Footer</div>
+    <div class="h-slider-container">
+      <div id="h-slider"></div>
+    </div>
+    <div class="v-slider-container">
+      <div id="v-slider"></div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="rounded-1 ui-section">I am a footer that fits my
+      <br>content</div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script type="text/javascript" language="javascript" src="nouislider.js"></script>
+  <script type="text/javascript" language="javascript" src="svg-pan-zoom.min.js"></script>
+  <script>
+    // Initialize slider:
+    $(document).ready(function () {
+
+
+
+      var hSlider = $("#h-slider")[0];
+      var vSlider = $("#v-slider")[0];
+
+      noUiSlider.create($("#h-slider")[0], {
+        start: [200, 500],
+        behaviour: 'drag',
+        connect: true,
+        range: {
+          'min': 0,
+          'max': 1000
+        }
+      });
+
+      noUiSlider.create($("#v-slider")[0], {
+        start: [200, 500],
+        behaviour: 'drag',
+        orientation: 'vertical',
+        connect: true,
+        range: {
+          'min': 0,
+          'max': 1000
+        }
+      });
+
+      var sPZ = svgPanZoom('#demo-tiger', {
+        viewportSelector: ".contentBody",
+        contain: true,
+        zoomEnabled: true,
+        controlIconsEnabled: true,
+        onPan: handlePan,
+        onZoom: handleZoom
+      });
+
+      $(window).resize(function () {
+        positionScrolls()
+      });
+
+      function positionScrolls() {
+        let parent = $(".contentBody")
+
+        $(".v-slider-container").css({
+          top: parent.position().top + 1,
+          right: 8,
+          height: parent.height(),
+          position: 'absolute'
+        });
+
+        $(".h-slider-container").css({
+          top: parent.height() + parent.position().top + 3,
+          left: parent.position().left,
+          width: parent.width() + 2,
+          position: 'absolute'
+        });
+        $("#demo-tiger").css({
+          width: parent.width(),
+          height: parent.height()
+
+        });
+        sPZ.updateBBox()
+      }
+
+      positionScrolls();
+
+      $(".footer").on('click', function () {
+        positionScrolls();
+      });
+
+
+
+      function handlePan(pan) {
+        handlePanZoom(pan, sPZ.getZoom())
+      }
+
+      function handleZoom(zm) {
+        handlePanZoom(sPZ.getPan(), sPZ.getZoom())
+      }
+
+      function handlePanZoom(pan, zoom) {
+        let parent = $(".contentBody");
+        let svgSize = sPZ.getSizes();
+        let msg1 =
+          `viewport (.contentBody) [L/T/W/H]: ${parent.position().left}, ${parent.position().top}, ${parent.width()}, ${parent.height()}`
+        let msg2 =
+          `svg (pan/screenBox): ${pan.x}, ${pan.y}, ${svgSize.width * sPZ.getZoom()}, ${svgSize.height * sPZ.getZoom()} `
+
+        let relBox = {};
+        if (pan.x < 0) {
+          relBox.x = pan.x;
+          relBox.width = svgSize.width * sPZ.getZoom();
+          relBox.viewX = Math.abs(pan.x);
+        } else {
+          relBox.x = 0;
+          relBox.viewX = 0;
+          relBox.width = (svgSize.width * sPZ.getZoom()) + pan.x;
+        }
+        if (pan.y < 0) {
+          relBox.y = pan.y;
+          relBox.height = svgSize.height * sPZ.getZoom();
+          relBox.viewY = Math.abs(pan.y);
+        } else {
+          relBox.y = 0;
+          relBox.viewY = 0;
+          relBox.height = (svgSize.height * sPZ.getZoom()) + pan.y;
+        }
+        relBox.zoom = sPZ.getZoom();
+        relBox.viewWidth = parent.width();
+        relBox.viewHeight = parent.height();
+        let msg3 =
+          `new box width/height: ${relBox.width}/${relBox.height}, zoom: ${relBox.zoom}, viewX: ${relBox.viewX}, viewWidth: ${relBox.viewWidth} `;
+        $(".footer div").html(msg1 + "<br>" + msg2 + "<br>" + msg3);
+        updateSliders(relBox);
+        positionScrolls();
+      }
+
+      function updateSliders(relBox) {
+        hSlider.noUiSlider.updateOptions({
+          range: {
+            'min': 0,
+            'max': relBox.width
+          },
+          start: [relBox.viewX, relBox.viewX + relBox.viewWidth],
+        });
+        vSlider.noUiSlider.updateOptions({
+          range: {
+            'min': 0,
+            'max': relBox.height
+          },
+          start: [relBox.viewY, relBox.viewY + relBox.viewHeight],
+        });
+      }
+
+    })
+  </script>
 
 </body>
 

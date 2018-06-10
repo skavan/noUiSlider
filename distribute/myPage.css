@@ -3,25 +3,26 @@
     height: 100vh;
     flex-direction: column;
     margin: 0;
-    background-color: whitesmoke;
+    background-color: white;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding:0;
+    overflow: hidden;
     
   }
   .header, .footer{
     flex: 0 0 auto;
-    background: #ccc;
-    margin: 6px;                   /* outside the element */
+    background: #eee;
+    margin: 0px;                   /* outside the element */
     padding: 6px;                  /* inside the element */
   }
   
   .content {
-    margin: 6px;                   /* outside the element */
+    margin: 14px;                   /* outside the element */
     margin-top: 3px;
     margin-bottom: 3px;
     padding: 0px;                  /* inside the element */
     flex: 1;
-    background: lightblue;
+    background: white;
     display: flex;
     flex-direction: column;
     /* default setting; can be omitted */
@@ -35,10 +36,10 @@
     /* background-color: lightgrey; */
   }
   .contentBody {
+    position: relative;
     flex: 1;
     height:100%;
     position: relative;
-    background-color: orange;
     overflow: hidden;
   }
   
@@ -82,7 +83,30 @@
     border-radius: 6px;
     border-color: gray;
   }
+  .rounded-1 {
+    border: 1px solid rgba(34, 36, 38, 0.15);
+    border-radius: 0.28571429rem;
+  }
 
   .shadow {
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
   }
+
+  .ui-section{
+      padding: 4px;
+      background-color: white;
+  }
+
+  .h-slider-container{
+      position:absolute;
+      width:400px;
+        left:50;
+        top:340;  
+  }
+  .v-slider-container{
+    position:absolute;
+    height:400px;
+      right:50;
+      top:10;  
+}
+ 

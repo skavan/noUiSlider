@@ -1,32 +1,5 @@
 
 
-.h-slider-container{
-  display: none;
-  position: relative;
-  width:100%; 
-  margin-top: auto;       /* force to bottom */
-  margin-bottom: 1px;     /* lift from bottom - can be negative*/
-}
-#h-slider{
-  margin-left: 12px;      /* left and right margin for slider */
-  margin-right: 12px;
-}
-.v-slider-container{
-  position: relative;
-  display: none;
-  height:100%; 
-  margin-left: auto;       /* force to right */
-  margin-right: 1px;     /* indent from right - can be negative*/
-  margin-top: 12px;
-  margin-bottom: 6px;
-}
-#v-slider{
-  
-  /* margin-top: 12px;      /* top and bottom margin for slider */
-  /* margin-bottom: 12px; */
-}
-
-
   .slider-labels {
     margin-top: 10px;
   }
