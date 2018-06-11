@@ -1,4 +1,4 @@
-/*! nouislider - 11.1.0 - 2018-06-09 13:11:26 */
+/*! nouislider - 11.1.0 - 2018-06-10 19:51:39 */
 
 (function (factory) {
 
@@ -1704,12 +1704,13 @@ function fixedDrag(event, dataHandles){
 	// A range drag always has 2 handles
 	if(dataHandles){
 		if (dataHandles.length == 2) {
+			//console.log("dragging from scope_events" + new Date().getMilliseconds());
 			// Check that it is draggable and connected
-			if (event.srcElement.classList.contains(options.cssClasses.draggable) && event.srcElement.classList.contains(options.cssClasses.connect)) {
+			//if (event.srcElement.classList.contains(options.cssClasses.draggable) && event.srcElement.classList.contains(options.cssClasses.connect)) {
 				// Pass both handles (start and end)
 				addClass(scope_Target, options.cssClasses.fixedDrag);
 				fireEvent('drag', dataHandles);
-			}
+			//}
 		}
 	}
 }

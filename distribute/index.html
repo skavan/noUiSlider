@@ -48,10 +48,10 @@
     // Initialize slider:
     $(document).ready(function () {
 
-
-
       var hSlider = $("#h-slider")[0];
       var vSlider = $("#v-slider")[0];
+      var isDragging = false;
+      var isDraggingTimeout;
 
       noUiSlider.create($("#h-slider")[0], {
         start: [200, 500],
@@ -74,11 +74,32 @@
         }
       });
 
+      hSlider.noUiSlider.on('drag', function () {
+        processSlider.apply(this, [].slice.call(arguments).concat(['drag','hscroll']));
+      })
+
+      vSlider.noUiSlider.on('drag', function () {
+        processSlider.apply(this, [].slice.call(arguments).concat(['drag','vscroll']));
+      })
+
+      hSlider.noUiSlider.on('slide', function () {
+        if (!this.target.classList.contains("noUi-state-fixedDrag")) {                          // only trigger if its not a fixedDrag
+          processSlider.apply(this, [].slice.call(arguments).concat(['slide', 'hscroll']));
+        }
+      })
+
+      vSlider.noUiSlider.on('slide', function () {
+        if (!this.target.classList.contains("noUi-state-fixedDrag")) {                          // only trigger if its not a fixedDrag
+          processSlider.apply(this, [].slice.call(arguments).concat(['slide', 'vscroll']));
+        }
+      })
+
       var sPZ = svgPanZoom('#demo-tiger', {
         viewportSelector: ".contentBody",
         contain: true,
         zoomEnabled: true,
         controlIconsEnabled: true,
+        minZoom: 0.25,
         onPan: handlePan,
         onZoom: handleZoom
       });
@@ -128,6 +149,9 @@
       }
 
       function handlePanZoom(pan, zoom) {
+        //return false;
+        if (isDragging){return false};
+        if (isNaN(pan.x)){return false}
         let parent = $(".contentBody");
         let svgSize = sPZ.getSizes();
         let msg1 =
@@ -135,7 +159,7 @@
         let msg2 =
           `svg (pan/screenBox): ${pan.x}, ${pan.y}, ${svgSize.width * sPZ.getZoom()}, ${svgSize.height * sPZ.getZoom()} `
 
-        let relBox = {};
+        let relBox = {x:0,y:0, width: svgSize.width * sPZ.getZoom()};
         if (pan.x < 0) {
           relBox.x = pan.x;
           relBox.width = svgSize.width * sPZ.getZoom();
@@ -161,10 +185,11 @@
           `new box width/height: ${relBox.width}/${relBox.height}, zoom: ${relBox.zoom}, viewX: ${relBox.viewX}, viewWidth: ${relBox.viewWidth} `;
         $(".footer div").html(msg1 + "<br>" + msg2 + "<br>" + msg3);
         updateSliders(relBox);
-        positionScrolls();
+        //positionScrolls();
       }
 
       function updateSliders(relBox) {
+        console.log("relboxWidth:" + relBox.width)
         hSlider.noUiSlider.updateOptions({
           range: {
             'min': 0,
@@ -172,6 +197,12 @@
           },
           start: [relBox.viewX, relBox.viewX + relBox.viewWidth],
         });
+        if ((relBox.viewX == 0) && (relBox.width <= (relBox.viewX + relBox.viewWidth))) {
+          $(hSlider).hide();
+        } else {
+          $(hSlider).show();
+        }
+
         vSlider.noUiSlider.updateOptions({
           range: {
             'min': 0,
@@ -179,6 +210,37 @@
           },
           start: [relBox.viewY, relBox.viewY + relBox.viewHeight],
         });
+        if ((relBox.viewY == 0) && (relBox.height <= (relBox.viewY + relBox.viewHeight))) {
+          $(vSlider).hide();
+        } else {
+          $(vSlider).show();
+        }
+      }
+
+      function processSlider(values, handle, unencoded, tap, positions, eventName, slider) {
+        //return false
+        // values: Current slider values (array);
+        // handle: Handle that caused the event (number);
+        // unencoded: Slider values without formatting (array);
+        // tap: Event was caused by the user tapping the slider (boolean);
+        // positions: Left offset of the handles (array);
+        //console.log(eventName, this.options.behaviour, this.target.classList.contains("noUi-state-fixedDrag"),
+        //  values, handle, positions, hSlider.noUiSlider.options.range);
+          if (eventName=="drag"){
+            let msg1 = `pan x: ${sPZ.getPan().x} pan ${sPZ.getPan().y}: , scrollPosX: ${values[0]} TO pax x: ${-values[0]}`;
+
+            isDragging=true;
+            clearTimeout(isDraggingTimeout);
+            isDraggingTimeout = setTimeout(() => isDragging=false, 500);
+            if (slider == "hscroll"){
+              sPZ.pan({x:-values[0], y:sPZ.getPan().y});
+            } else {
+              sPZ.pan({x:sPZ.getPan().x, y: -values[0]});
+            }
+          } else {
+            console.log("shouldn't be here")
+          }
+        //console.log(eventName, this.target.classList);
       }
 
     })
