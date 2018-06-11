@@ -46,12 +46,14 @@
   <script type="text/javascript" language="javascript" src="svg-pan-zoom.min.js"></script>
   <script>
     // Initialize slider:
+    var relBox = {}; //{x:0,y:0, width: svgSize.width * sPZ.getZoom()};
     $(document).ready(function () {
 
       var hSlider = $("#h-slider")[0];
       var vSlider = $("#v-slider")[0];
       var isDragging = false;
       var isDraggingTimeout;
+      
 
       noUiSlider.create($("#h-slider")[0], {
         start: [200, 500],
@@ -133,6 +135,7 @@
       }
 
       positionScrolls();
+      handlePanZoom(sPZ.getPan(), sPZ.getZoom());
 
       $(".footer").on('click', function () {
         positionScrolls();
@@ -159,7 +162,7 @@
         let msg2 =
           `svg (pan/screenBox): ${pan.x}, ${pan.y}, ${svgSize.width * sPZ.getZoom()}, ${svgSize.height * sPZ.getZoom()} `
 
-        let relBox = {x:0,y:0, width: svgSize.width * sPZ.getZoom()};
+        
         if (pan.x < 0) {
           relBox.x = pan.x;
           relBox.width = svgSize.width * sPZ.getZoom();
@@ -238,7 +241,19 @@
               sPZ.pan({x:sPZ.getPan().x, y: -values[0]});
             }
           } else {
-            console.log("shouldn't be here")
+            // get the new range, 
+            // we know connect width (distance between handles) = viewport width = parent.width.
+            // we know existing zoom and existing zoomed width
+            // let's say current viewport width = 900 and current zoomed svg width = 1800 and current connectwidth - 900/1800 * 900 = 450.
+            // connectWidth/viewport width = 
+            // we know current zoom. we know base size, 
+            // parent.width /  ${svgSize.width * sPZ.getZoom()} = cu
+
+            // $("#h-slider")[0].noUiSlider.options.range.max (assumes min is 0) = size of image.
+            // values[1]-values[0] = 
+            let newZoom = ((relBox.viewWidth/relBox.width) / ((values[1]-values[0])/relBox.width)) * relBox.zoom;
+            let msg1 = `zoom from: ${relBox.zoom} to ${newZoom}`;
+            console.log(msg1)
           }
         //console.log(eventName, this.target.classList);
       }
