@@ -46,14 +46,14 @@
   <script type="text/javascript" language="javascript" src="svg-pan-zoom.min.js"></script>
   <script>
     // Initialize slider:
-    var relBox = {}; //{x:0,y:0, width: svgSize.width * sPZ.getZoom()};
+    var relBox = {}; //{x:0,y:0, width: svgSize.width * svgPanZoomCtl.getZoom()};
     $(document).ready(function () {
 
       var hSlider = $("#h-slider")[0];
       var vSlider = $("#v-slider")[0];
       var isDragging = false;
       var isDraggingTimeout;
-      
+
 
       noUiSlider.create($("#h-slider")[0], {
         start: [200, 500],
@@ -77,11 +77,11 @@
       });
 
       hSlider.noUiSlider.on('drag', function () {
-        processSlider.apply(this, [].slice.call(arguments).concat(['drag','hscroll']));
+        processSlider.apply(this, [].slice.call(arguments).concat(['drag', 'hscroll']));
       })
 
       vSlider.noUiSlider.on('drag', function () {
-        processSlider.apply(this, [].slice.call(arguments).concat(['drag','vscroll']));
+        processSlider.apply(this, [].slice.call(arguments).concat(['drag', 'vscroll']));
       })
 
       hSlider.noUiSlider.on('slide', function () {
@@ -96,7 +96,7 @@
         }
       })
 
-      var sPZ = svgPanZoom('#demo-tiger', {
+      var svgPanZoomCtl = svgPanZoom('#demo-tiger', {
         viewportSelector: ".contentBody",
         contain: true,
         zoomEnabled: true,
@@ -108,6 +108,13 @@
 
       $(window).resize(function () {
         positionScrolls()
+      });
+
+      positionScrolls();
+      handlePanZoom(svgPanZoomCtl.getPan(), svgPanZoomCtl.getZoom());     
+
+      $(".footer").on('click', function () {
+        positionScrolls();
       });
 
       function positionScrolls() {
@@ -131,57 +138,48 @@
           height: parent.height()
 
         });
-        sPZ.updateBBox()
+        svgPanZoomCtl.updateBBox()
       }
-
-      positionScrolls();
-      handlePanZoom(sPZ.getPan(), sPZ.getZoom());
-
-      $(".footer").on('click', function () {
-        positionScrolls();
-      });
-
-
-
+      
       function handlePan(pan) {
-        handlePanZoom(pan, sPZ.getZoom())
+        handlePanZoom(pan, svgPanZoomCtl.getZoom())
       }
 
       function handleZoom(zm) {
-        handlePanZoom(sPZ.getPan(), sPZ.getZoom())
+        handlePanZoom(svgPanZoomCtl.getPan(), svgPanZoomCtl.getZoom())
       }
 
       function handlePanZoom(pan, zoom) {
         //return false;
-        if (isDragging){return false};
-        if (isNaN(pan.x)){return false}
+        if (isDragging) { return false };
+        if (isNaN(pan.x)) { return false }
         let parent = $(".contentBody");
-        let svgSize = sPZ.getSizes();
+        let svgSize = svgPanZoomCtl.getSizes();
         let msg1 =
           `viewport (.contentBody) [L/T/W/H]: ${parent.position().left}, ${parent.position().top}, ${parent.width()}, ${parent.height()}`
         let msg2 =
-          `svg (pan/screenBox): ${pan.x}, ${pan.y}, ${svgSize.width * sPZ.getZoom()}, ${svgSize.height * sPZ.getZoom()} `
+          `svg (pan/screenBox): ${pan.x}, ${pan.y}, ${svgSize.width * svgPanZoomCtl.getZoom()}, ${svgSize.height * svgPanZoomCtl.getZoom()} `
 
-        
+
         if (pan.x < 0) {
           relBox.x = pan.x;
-          relBox.width = svgSize.width * sPZ.getZoom();
+          relBox.width = svgSize.width * svgPanZoomCtl.getZoom();
           relBox.viewX = Math.abs(pan.x);
         } else {
           relBox.x = 0;
           relBox.viewX = 0;
-          relBox.width = (svgSize.width * sPZ.getZoom()) + pan.x;
+          relBox.width = (svgSize.width * svgPanZoomCtl.getZoom()) + pan.x;
         }
         if (pan.y < 0) {
           relBox.y = pan.y;
-          relBox.height = svgSize.height * sPZ.getZoom();
+          relBox.height = svgSize.height * svgPanZoomCtl.getZoom();
           relBox.viewY = Math.abs(pan.y);
         } else {
           relBox.y = 0;
           relBox.viewY = 0;
-          relBox.height = (svgSize.height * sPZ.getZoom()) + pan.y;
+          relBox.height = (svgSize.height * svgPanZoomCtl.getZoom()) + pan.y;
         }
-        relBox.zoom = sPZ.getZoom();
+        relBox.zoom = svgPanZoomCtl.getZoom();
         relBox.viewWidth = parent.width();
         relBox.viewHeight = parent.height();
         let msg3 =
@@ -220,6 +218,18 @@
         }
       }
 
+      function reportStats(pan, zoom, sliderRange, barPosition){
+        let parent = $(".contentBody");
+        let svgSize = svgPanZoomCtl.getSizes();
+        let msg1 =
+          `viewport (.contentBody) [L/T/W/H]: ${parent.position().left.toFixed(0)}, ${parent.position().top.toFixed(0)}, viewportWidth: ${parent.width().toFixed(0)},  viewportHeight: ${parent.height().toFixed(0)}`
+        let msg2 =
+          `svg (pan/screenBox/zoom): panX: ${pan.x.toFixed(0)}, panY: ${pan.y.toFixed(0)}, zoomedWidth:${(svgSize.width * svgPanZoomCtl.getZoom()).toFixed(0)}, zoomedHeight: ${(svgSize.height * svgPanZoomCtl.getZoom()).toFixed(0)}, zoom: ${svgPanZoomCtl.getZoom().toFixed(2)} `
+        let msg3 =
+          `requested box pan/zoom/handles: panX: ${pan.x.toFixed(0)}, panY: ${pan.y.toFixed(0)}, zoom: ${zoom.toFixed(1)}, sliderRange: ${sliderRange.toFixed(0)}, handle[0]: ${barPosition[0].toFixed(0)}, handle[1]: ${barPosition[1].toFixed(0)}`
+          $(".footer div").html(msg1 + "<br>" + msg2 + "<br>" + msg3);
+      }
+
       function processSlider(values, handle, unencoded, tap, positions, eventName, slider) {
         //return false
         // values: Current slider values (array);
@@ -229,35 +239,76 @@
         // positions: Left offset of the handles (array);
         //console.log(eventName, this.options.behaviour, this.target.classList.contains("noUi-state-fixedDrag"),
         //  values, handle, positions, hSlider.noUiSlider.options.range);
-          if (eventName=="drag"){
-            let msg1 = `pan x: ${sPZ.getPan().x} pan ${sPZ.getPan().y}: , scrollPosX: ${values[0]} TO pax x: ${-values[0]}`;
+        isDragging = true;
+        clearTimeout(isDraggingTimeout);
+        isDraggingTimeout = setTimeout(() => isDragging = false, 500);
 
-            isDragging=true;
-            clearTimeout(isDraggingTimeout);
-            isDraggingTimeout = setTimeout(() => isDragging=false, 500);
-            if (slider == "hscroll"){
-              sPZ.pan({x:-values[0], y:sPZ.getPan().y});
-            } else {
-              sPZ.pan({x:sPZ.getPan().x, y: -values[0]});
-            }
+        if (eventName == "drag") {
+          let msg1 = `pan x: ${svgPanZoomCtl.getPan().x} pan ${svgPanZoomCtl.getPan().y}: , scrollPosX: ${values[0]} TO pax x: ${-values[0]}`;
+
+
+          if (slider == "hscroll") {
+            svgPanZoomCtl.pan({ x: -values[0], y: svgPanZoomCtl.getPan().y });
           } else {
-            // get the new range, 
-            // we know connect width (distance between handles) = viewport width = parent.width.
-            // we know existing zoom and existing zoomed width
-            // let's say current viewport width = 900 and current zoomed svg width = 1800 and current connectwidth - 900/1800 * 900 = 450.
-            // connectWidth/viewport width = 
-            // we know current zoom. we know base size, 
-            // parent.width /  ${svgSize.width * sPZ.getZoom()} = cu
-
-            // $("#h-slider")[0].noUiSlider.options.range.max (assumes min is 0) = size of image.
-            // values[1]-values[0] = 
-            let newZoom = ((relBox.viewWidth/relBox.width) / ((values[1]-values[0])/relBox.width)) * relBox.zoom;
-            let msg1 = `zoom from: ${relBox.zoom} to ${newZoom}`;
-            console.log(msg1)
+            svgPanZoomCtl.pan({ x: svgPanZoomCtl.getPan().x, y: -values[0] });
           }
+        } else {
+          
+
+          let parent = $(".contentBody");
+          let fullSvgSize, viewBoxSize, originalSize;
+          if (slider== "hscroll"){
+            fullSvgSize = relBox.width;
+            viewBoxSize = parent.width(); 
+            originalSize = svgPanZoomCtl.getSizes().width;
+          } else {
+            fullSvgSize = relBox.height;
+            viewBoxSize = parent.height();
+            originalSize = svgPanZoomCtl.getSizes().height;
+          }
+          
+          let connectBarPct = (values[1] - values[0]) / fullSvgSize;
+          let newSize = viewBoxSize * (1 / connectBarPct);
+          let newZoom = newSize / svgPanZoomCtl.getSizes().width
+          let axis = "width";
+
+          let connectBarPct2 = (unencoded[1] - unencoded[0]) / relBox[axis];     // get the newly sized connect bar as a % of zoomed svg width/height
+          let newSize2 = parent[axis]() * (1 / connectBarPct2)            // calculate the new target svg size (width or height) based on the connectBarSize and the viewport width/height
+          let newZoom2 = newSize2/ svgPanZoomCtl.getSizes()[axis];                  // calculate the zoom factor based on the new Target Size (W/H) and the original (W/H).
+
+          //let newZoom = ((relBox.viewWidth/relBox.width) / ((values[1]-values[0])/relBox.width)) * relBox.zoom;
+          let msg1 = `zoom from: ${relBox.zoom} to ${newZoom2} and connectBar ${connectBarPct} and pan: ${unencoded[0]}-${unencoded[1]} [${unencoded[1]-unencoded[0]}]`;
+          svgPanZoomCtl.zoom(newZoom);
+          reportStats({ x: -values[0], y: svgPanZoomCtl.getPan().y }, newZoom, newSize2, unencoded);
+          
+          /* hSlider.noUiSlider.updateOptions({
+          range: {
+            'min': 0,
+            'max': newSize2
+            }
+          });
+           */
+          //svgPanZoomCtl.pan({ x: -values[0], y: svgPanZoomCtl.getPan().y });
+          //processSlider(values, handle, unencoded, tap, positions, "drag", slider);   // update the pan 
+          console.log(msg1);
+        }
         //console.log(eventName, this.target.classList);
       }
 
+      function processZoom(newSliderRange, newHandlePositions){
+        let parent = $(".contentBody");
+        let svgBase = svgPanZoomCtl.getSizes();
+        let prevZoom = svgPanZoomCtl.getZoom();
+        let svgZoomed = {width: svgBase.width * prevZoom, height: svgBase.height * prevZoom};
+        let prevPan = svgPanZoomCtl.getPan();
+        let viewPort = {width: parent.width(), height: parent.height()};
+        let axis = "width";
+
+        let connectBarAsPctofSlider = (newHandlePositions[1] - newHandlePositions[0]) / svgZoomed["axis"];     // get the newly sized connect bar as a % of previous zoomed svg width/height
+        
+//svgSize.width * svgPanZoomCtl.getZoom();
+
+      }
     })
   </script>
 
